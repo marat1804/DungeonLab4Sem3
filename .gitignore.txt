@@ -1,0 +1,8 @@
+##All doxygen files
+DOX/*
+DOX/
+.vs/*
+.vs/
+*html
+*js
+*tex
