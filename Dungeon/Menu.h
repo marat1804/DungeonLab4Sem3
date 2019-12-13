@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 #include "Cell.h"
-#include "Ñharacters.h"
+#include "Characters.h"
 #include "Items.h"
 using std::string;
 namespace MENU {
@@ -18,7 +18,7 @@ namespace MENU {
 
 		vector< string> EnchantChange = { "Which multiplier do you want to change:","0. Cancel","1. Humanoid" ,"2. Insect","3. Animal","4. Demon ","5. Icy" ,"6. Undead" }; ///<Menu to change the enchant
 
-		vector <string> ArtefectChange = { "What parameter do you want to change:","0. Cancel","1. Agility","2. Stamina","3. Sterength","4. Max Health" };///<Menu to change the artifact
+		vector <string> ArtefactChange = { "What parameter do you want to change:","0. Cancel","1. Agility","2. Stamina","3. Sterength","4. Max Health" };///<Menu to change the artifact
 
 		vector<string> EquipChange = { "What parameter do you want to change:","0. Cancel","1. Defence", "2. Type ", "3. Artefacts" };///<Menu to change the equipment
 
@@ -34,7 +34,7 @@ namespace MENU {
 
 		vector < string > MainMenu = { "What do you want to do?", "0. Exit and save", "1. Hero Edit", "2. Map Edit" };///<Just main menu
 
-		vector < string> MapMenu = { "What do you want to do?", "0. Cancel", "1. Change size", "2. Change cell type","3. Add chest", "4. Add Enemy", "5. Add Floor", "6. Edit chest", "7. Edit Enemy" };///<Menu to change the map
+		vector < string> MapMenu = { "What do you want to do?", "0. Cancel", "1. Change size", "2. Change cell type","3. Add chest", "4. Add Enemy", "5. Add Floor", "6. Edit chest", "7. Edit Enemy","8. Add Item" };///<Menu to change the map
 
 		vector < string> CellType = { "0 - FLOOR","1 - OPENED_DOOR","2 - CLOSED_DOOR","3 - STAIRS_UP", "4 - STAIRS_DOWN","5 - WALL" };///<All the cell types
 

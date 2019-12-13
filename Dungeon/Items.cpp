@@ -36,6 +36,7 @@ namespace ITEMS {
 	*/
 	void Weapon::save(std::fstream & s)
 	{
+		s << iAm() << " ";
 		s << getName() << " ";
 		s << std::to_string(damage)<<" ";
 		if (enchantments == nullptr)
@@ -47,6 +48,7 @@ namespace ITEMS {
 			enchantments->save(s);
 		s << std::endl;
 	}
+
 	void Weapon::load(std::fstream &s)
 	{
 		string buf;
@@ -311,7 +313,7 @@ namespace ITEMS {
 	\param value - how much this artefact will change this hero param
 	*/
 
-	void Artefact::changeParams(ArtefectParams type, double value)
+	void Artefact::changeParams(ArtefactParams type, double value)
 	{
 		switch (type)
 		{
@@ -335,6 +337,7 @@ namespace ITEMS {
 
 	void ArtefactWeapon::save(std::fstream & s)
 	{
+		s << iAm() << " ";
 		s << getName() << " ";
 		s << std::to_string(getDamage()) << " ";
 		if (!isEnchanted())
@@ -380,9 +383,9 @@ namespace ITEMS {
 				setMultiplier(static_cast<EnemyType>(i), std::stod(mod));
 			}
 		}
-		for (int i = 0; i < ArtefectParams::ARTEFACTCOUNT; ++i) {
+		for (int i = 0; i < ArtefactParams::ARTEFACTCOUNT; ++i) {
 			s >> type >> mod;
-			changeParams(static_cast<ArtefectParams>(i), std::stoi(mod));
+			changeParams(static_cast<ArtefactParams>(i), std::stoi(mod));
 		}
 	}
 
@@ -449,7 +452,7 @@ namespace ITEMS {
 	\param value - value for booster
 	*/
 
-	void ArtefactWeapon::changeFeatures(double damage_, ArtefectParams type_a , double value , EnemyType type_e , double multiplier)
+	void ArtefactWeapon::changeFeatures(double damage_, ArtefactParams type_a , double value , EnemyType type_e , double multiplier)
 	{
 		setDamage(damage_);
 		setMultiplier(type_e, multiplier);
@@ -499,6 +502,7 @@ namespace ITEMS {
 
 	void Equipment::save(std::fstream &s)
 	{
+		s << iAm()<<" ";
 		s << getName() << " ";
 		s << type << " " << std::to_string(defence) << " " << 0<<std::endl;
 
@@ -513,6 +517,7 @@ namespace ITEMS {
 		type = static_cast<EquipType>(std::stoi(buf));
 		s >> buf;
 		defence = std::stod(buf);
+		s >> buf;
 	}
 
 	ItemType Equipment::iAm()
@@ -603,8 +608,9 @@ namespace ITEMS {
 	\param s - file stream
 	*/
 
-	void ArtefectEquipment::save(std::fstream & s)
+	void ArtefactEquipment::save(std::fstream & s)
 	{
+		s << iAm() << " ";
 		s << Item::getName() << " ";
 		s << getType() << " " << std::to_string(getDefence()) << " " << 1 << std::endl;
 		s << STAMINA << " " << getStamina() << std::endl;
@@ -613,24 +619,24 @@ namespace ITEMS {
 		s << AGILITY << " " << getAgility() << std::endl;
 	}
 
-	void ArtefectEquipment::load(std::fstream & s)
+	void ArtefactEquipment::load(std::fstream & s)
 	{
 		string buf;
 		string type, mod;
 		s >> buf;
-		setName(name);
+		setName(buf);
 		s >> buf;
 		setType( static_cast<EquipType>(std::stoi(buf)));
 		s >> buf;
 		setDefence( std::stod(buf));
 		s >> buf;
-		for (int i = 0; i < ArtefectParams::ARTEFACTCOUNT; ++i) {
+		for (int i = 0; i < ArtefactParams::ARTEFACTCOUNT; ++i) {
 			s >> type >> mod;
-			changeParams(static_cast<ArtefectParams>(i), std::stoi(mod));
+			changeParams(static_cast<ArtefactParams>(i), std::stoi(mod));
 		}
 	}
 
-	ItemType ArtefectEquipment::iAm()
+	ItemType ArtefactEquipment::iAm()
 	{
 		return ItemType::ARTEFACTEQUIPMENT;
 	}
@@ -640,7 +646,7 @@ namespace ITEMS {
 	\return Additional stamina of artifact equipment
 	*/
 
-	int ArtefectEquipment::getStamina()
+	int ArtefactEquipment::getStamina()
 	{
 		return Artefact::getStamina();
 	}
@@ -650,7 +656,7 @@ namespace ITEMS {
 	\return Additional strength of artifact equipment
 	*/
 
-	int ArtefectEquipment::getStrength()
+	int ArtefactEquipment::getStrength()
 	{
 		return Artefact::getStrength();
 	}
@@ -660,7 +666,7 @@ namespace ITEMS {
 	\return Additional agility of artifact equipment
 	*/
 
-	int ArtefectEquipment::getAgility()
+	int ArtefactEquipment::getAgility()
 	{
 		return Artefact::getAgility();
 	}
@@ -670,14 +676,14 @@ namespace ITEMS {
 	\return Defence of equipment (Additional 2 defence for each stamina point)
 	*/
 
-	double ArtefectEquipment::generateDefence()
+	double ArtefactEquipment::generateDefence()
 	{
 		return (getDefence()  + getStamina() * 2) ;
 	}
 
 	/*! \brief Returns all params of Artifact Equipment*/
 
-	EquipParams ArtefectEquipment::getFeatures()
+	EquipParams ArtefactEquipment::getFeatures()
 	{
 		EquipParams p;
 		p.def = getDefence();
@@ -697,7 +703,7 @@ namespace ITEMS {
 	\param value - new value for HeroParam in type_a (0 - if don't want to change)
 	*/
 
-	void ArtefectEquipment::changeFeatures(double def, EquipType type_, ArtefectParams type_a, double value)
+	void ArtefactEquipment::changeFeatures(double def, EquipType type_, ArtefactParams type_a, double value)
 	{
 		setDefence(def);
 		setType(type_);
@@ -713,7 +719,7 @@ namespace ITEMS {
 
 	void Picklocks::save(std::fstream & s)
 	{
-		s << getName() << " " << std::to_string(amount) << std::endl;
+		s<<iAm() << " " << getName() << " " << std::to_string(amount) << std::endl;
 	}
 
 	void Picklocks::load(std::fstream & s)
@@ -747,7 +753,7 @@ namespace ITEMS {
 
 	void Potion::save(std::fstream &s)
 	{
-		s << getName() << " " << features.agility<< " "<<features.stamina<<
+		s<<iAm() << " " << getName() << " " << features.agility<< " "<<features.stamina<<
 			" "<< features.strength<<" "<<features.MaxHealth<<" "<<duration<<std::endl;
 	}
 
@@ -823,7 +829,7 @@ namespace ITEMS {
 	\param value - value for changing parameter
 	*/
 
-	void Potion::changeFeatures(int duration_, ArtefectParams a, double value)
+	void Potion::changeFeatures(int duration_, ArtefactParams a, double value)
 	{
 		if (duration_ != 0)
 			duration = duration_;
@@ -890,7 +896,6 @@ namespace ITEMS {
 	void Chest::save(std::fstream &s)
 	{
 		s << lockLevel << " " << pos.x << " " << pos.y << std::endl;
-		s << item->iAm() << std::endl;
 		item->save(s);
 	}
 	/*!\brief Loads all information about chest from the file*/
@@ -902,7 +907,7 @@ namespace ITEMS {
 		Potion *po;
 		Picklocks *pi;
 		ArtefactWeapon *aw;
-		ArtefectEquipment *ae;
+		ArtefactEquipment *ae;
 		string buf;
 		s >> buf;
 		lockLevel = std::stoi(buf);
@@ -945,7 +950,7 @@ namespace ITEMS {
 			item = aw;
 			break;
 		case ITEMS::ARTEFACTEQUIPMENT:
-			ae = new ArtefectEquipment("A", EquipType::AMULET, 1, param);
+			ae = new ArtefactEquipment("A", EquipType::AMULET, 1, param);
 			ae->load(s);
 			item = ae;
 			break;

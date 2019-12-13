@@ -99,7 +99,7 @@ TEST(ArtifactWeaponTest, ChangeFeatures) {
 	mod.MaxHealth = 15;
 	std::string s = "Art";
 	ITEMS::ArtefactWeapon w(s, 140.0, mod);
-	w.changeFeatures(160.0, ArtefectParams::AGILITY, 45);
+	w.changeFeatures(160.0, ArtefactParams::AGILITY, 45);
 	WeaponParams p = w.getFeatures();
 	ASSERT_EQ(p.damage, 160.0);
 	ASSERT_EQ(p.params.agility, 45);
@@ -130,7 +130,7 @@ TEST(ArtefactEquipmentTest, Init) {
 	mod.strength = 3;
 	mod.MaxHealth = 15;
 	std::string s = "Art";
-	ITEMS::ArtefectEquipment e(s,EquipType::AMULET, 45,mod);
+	ITEMS::ArtefactEquipment e(s,EquipType::AMULET, 45,mod);
 	EquipParams p = e.getFeatures();
 	ASSERT_EQ(p.type, EquipType::AMULET);
 	ASSERT_EQ(p.def, 45);
@@ -144,8 +144,8 @@ TEST(ArtefactEquipmentTest, ChangeFeatures) {
 	mod.strength = 3;
 	mod.MaxHealth = 15;
 	std::string s = "Art";
-	ITEMS::ArtefectEquipment e(s, EquipType::AMULET, 45, mod);
-	e.changeFeatures(14, EquipType::PANTS, ArtefectParams::MAXHEALTH, 400);
+	ITEMS::ArtefactEquipment e(s, EquipType::AMULET, 45, mod);
+	e.changeFeatures(14, EquipType::PANTS, ArtefactParams::MAXHEALTH, 400);
 	EquipParams p = e.getFeatures();
 	ASSERT_EQ(p.def, 14);
 	ASSERT_EQ(p.isArtifact, true);
@@ -185,7 +185,7 @@ TEST(PotionTest, ChangeParams) {
 	std::string s = "Potion";
 	Potion p(s, 45, mod);
 	p.changeFeatures(75);
-	p.changeFeatures(0, ArtefectParams::STAMINA, 44);
+	p.changeFeatures(0, ArtefactParams::STAMINA, 44);
 	PotionParams param = p.getFeatures();
 	ASSERT_EQ(param.duration, 75);
 	ASSERT_EQ(param.params.stamina, 44);
@@ -199,7 +199,7 @@ TEST(ChestTest, Init) {
 	mod.MaxHealth = 15;
 	std::string s = "Art";
 	ITEMS::ArtefactWeapon *w=new ArtefactWeapon(s, 140.0, mod);
-	Chest ch(w, 5);
+	Chest ch(w,1,1 ,5);
 	ChestParams p = ch.getParams();
 	ASSERT_EQ(p.locklevel, 5);
 	ASSERT_EQ(p.item->iAm(), ItemType::ARTEFACTWEAPON);
@@ -213,7 +213,7 @@ TEST(ChestTest, PutItem) {
 	mod.MaxHealth = 15;
 	std::string s = "Art";
 	ITEMS::ArtefactWeapon *w = new ArtefactWeapon(s, 140.0, mod);
-	Chest ch(w, 5);
+	Chest ch(w,1,1, 5);
 	ITEMS::Equipment *e = new Equipment;
 	ch.putItem(e);
 	ChestParams p = ch.getParams();
@@ -437,7 +437,7 @@ TEST(FloorTest, PutEnemy) {
 TEST(FloorTest, PutItem) {
 	CELL::Floor fl;
 	ITEMS::Weapon *w = new Weapon;
-	fl.putItem(w, 0, 0);
+	fl.putItem(w, 0, 0,1);
 	ASSERT_EQ(fl.getType(0, 0), CELL::CellType::ITEM);
 }
 

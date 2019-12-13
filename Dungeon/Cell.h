@@ -6,7 +6,7 @@ This file has a cell of all character classes
 */
 
 #include "Items.h"
-#include "Ñharacters.h"
+#include "Characters.h"
 
 #ifndef _CELL_H_
 #define _CELL_H_
@@ -36,6 +36,7 @@ namespace CELL {
 		ENEMY,///<Enemy
 		CHEST,///< Chest
 		ITEM///<Item
+		///HERO ///<Hero
 	};
 
 	/*!\brief This class describes one cell of the floor*/
@@ -47,7 +48,7 @@ namespace CELL {
 	public:
 		Cell(CellType c = CellType::FLOOR, Item *i = nullptr) :type(c), object(i) {};
 		void setType(CellType);
-		void putItem(Item *i);
+		void putItem(Item *i, int);
 		CellType getType();
 		void openDoor();
 		void closeDoor();
@@ -75,7 +76,7 @@ namespace CELL {
 	public:
 		Floor();
 		Floor(int len, int wid);
-		void putItem(Item *i, int x, int y);
+		void putItem(Item *i, int x, int y, int p);
 		Size getSize();
 		void changeType(int, int, CellType);
 		CellType getType(int, int);
@@ -86,9 +87,10 @@ namespace CELL {
 		void addChest(Chest *e, int x, int y);
 		void putEnemy(Enemy *e, int x, int y);
 		void setSize(Size);
-		void print();
+		void print(Chords);
 		void save(int);
 		void load(int);
+		Item * getItem(int x, int y);
 		~Floor();
 	};
 
@@ -106,7 +108,8 @@ namespace CELL {
 	public: 
 		Dungeon(string s) :numberOfFloors(1) { hero.setName(s); Floor *f=new Floor(10,10); floors.push_back(f); };
 		void createEnemy(string name, EnemyType type, int floor, int x, int y, Item *it = nullptr, double health = 200);
-		void makeTurn();
+		void makeTurn(std::string s);
+		int getCurrLevel();
 		Size getSize(int);
 		/*!\brief Returns amount of the levels*/
 		int getLevelCount() { return numberOfFloors; }; 

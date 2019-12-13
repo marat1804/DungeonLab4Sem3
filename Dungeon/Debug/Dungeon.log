@@ -1,22 +1,15 @@
-﻿  Menu.cpp
+﻿  Cell.cpp
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(88): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(89): warning C5043: "Map<INDEX,INFO>::operator []": спецификация исключения не соответствует предыдущему объявлению
   c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(36): note:  см. объявление "Map<INDEX,INFO>::operator []"
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(101): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(102): warning C5043: "Map<INDEX,INFO>::operator []": спецификация исключения не соответствует предыдущему объявлению
   c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(37): note:  см. объявление "Map<INDEX,INFO>::operator []"
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(66): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(70): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(81): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(85): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(8): warning C4101: y: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(8): warning C4101: x: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(9): warning C4101: n: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(159): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(325): warning C4101: ww: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(443): warning C4101: ee: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(501): warning C4101: n: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(587): warning C4101: y: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(614): warning C4101: y: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\menu.cpp(658): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(336): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(342): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(347): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(367): warning C4101: type: неиспользованная локальная переменная
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(512): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(531): warning C4018: >=: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(750): warning C4018: <: несоответствие типов со знаком и без знака
   Dungeon.vcxproj -> C:\Users\marat\Desktop\Плюсы\Dungeon\Debug\Dungeon.lib

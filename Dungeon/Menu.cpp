@@ -5,8 +5,15 @@ namespace MENU {
 
 	void Dialog::menu_map_print(CELL::Floor *floor, CELL::Dungeon &d)
 	{
+		Weapon *w;
+		Equipment *eq;
+		Potion *p;
+		Picklocks *pi;
+		ItemType t;
+		HeroParams mod;
 		int fl = 1, i, x, y;
 		int n;
+		int tip;
 		vector<Enemy *> enemy;
 		vector<Chest *> chest;
 		CELL::Size map(0,0);
@@ -16,7 +23,7 @@ namespace MENU {
 			print(MapMenu);
 			map = floor->getSize();
 			std::cout << "Width - " << map.width << " Length - " << map.length << std::endl;
-			floor->print();
+			floor->print(d.getHero().getPos());
 			std::cin >> i;
 			switch (i)
 			{
@@ -86,6 +93,38 @@ namespace MENU {
 						menu_enemy_print(enemy[x]);
 				}
 				break;
+			case 8:
+				std::cout << "Where do you want to put it?";
+				std::cin >> x >> y;
+				std::cout << "What do you want to create?" << std::endl;
+				print(TypeOfItem);
+				std::cin >> tip;
+				switch (tip)
+				{
+				case 0:
+					w = new Weapon;
+					floor->putItem(w, x, y,1);
+					menu_weapon_print(w);
+					break;
+				case 1:
+					eq = new Equipment;
+					floor->putItem(eq, x, y,1);
+					menu_equipment_change(eq);
+					break;
+				case 2:
+					p = new Potion("Potion", 15, mod);
+					floor->putItem(p, x, y,1);
+					menu_potion_change(p);
+					break;
+				case 3:
+					pi = new Picklocks("Picklocks");
+					floor->putItem(pi, x, y,1);
+					menu_picklock_change(pi);
+					break;
+				default:
+					break;
+				}
+				break;
 			default:
 				std::cout << "Error" << std::endl;
 				std::cin.clear();
@@ -136,7 +175,9 @@ namespace MENU {
 		int fl = 1, x, y;
 		Hero & h = d.getHero();
 		Weapon *w;
+		Chords p(0,0);
 		Equipment *newe;
+		CELL::Floor * f = d.getFloor(d.getCurrLevel());
 		map<EquipType, Equipment *> &e = h.getEquipMap();
 		while (fl) {
 			print(HeroChange);
@@ -174,8 +215,15 @@ namespace MENU {
 					continue;
 				}
 				else {
-					h.setPos(x, y);
+					p = h.getPos();
+					if (f->getType(x, y) == CELL::CellType::FLOOR) {
+						h.setPos(x, y);
+					}
+					else {
+						std::cout << "There is something but not floor" << std::endl;
+					}
 				}
+
 				break;
 			default:
 				std::cout << "Error" << std::endl;
@@ -395,16 +443,10 @@ namespace MENU {
 	{
 		ItemType t = w->iAm();
 		Artefact *a = dynamic_cast<Artefact*>(w);
-		/*if (t == ItemType::ARTEFACTENCHANTWEAPON || t == ItemType::ARTEFACTWEAPON) {
-			ArtefactWeapon *aw = dynamic_cast<ArtefactWeapon*>(w);
-		}
-		if (t == ItemType::ARTEFACTEQUIPMENT) {
-			ArtefectEquipment *aw = dynamic_cast<ArtefectEquipment*>(w);
-		}*/
 		int fl = 1; int n;
 		double d;
 		while (fl) {
-			print(ArtefectChange);
+			print(ArtefactChange);
 			std::cin >> n;
 			if (n != 0) {
 				std::cout << "Enter the value --> ";
@@ -416,16 +458,16 @@ namespace MENU {
 				fl = 0;
 				break;
 			case 1:
-				a->changeParams( ArtefectParams::AGILITY, d);
+				a->changeParams( ArtefactParams::AGILITY, d);
 				break;
 			case 2:
-				a->changeParams(ArtefectParams::STAMINA, d);
+				a->changeParams(ArtefactParams::STAMINA, d);
 				break;
 			case 3:
-				a->changeParams(ArtefectParams::STRENGTH, d);
+				a->changeParams(ArtefactParams::STRENGTH, d);
 				break;
 			case 4:
-				a->changeParams(ArtefectParams::MAXHEALTH, d);
+				a->changeParams(ArtefactParams::MAXHEALTH, d);
 				break;
 			default:
 				std::cout << "Error" << std::endl;
@@ -441,7 +483,7 @@ namespace MENU {
 		int fl = 1, typ = 0;
 		double def;
 		Equipment *ee;
-		ArtefectEquipment *ae;
+		ArtefactEquipment *ae;
 		HeroParams params;
 		ItemType t;
 		while (fl) {
@@ -473,7 +515,7 @@ namespace MENU {
 				if (t != ARTEFACTEQUIPMENT) {
 					def = e->generateDefence();
 					
-					ae = new ArtefectEquipment("Artefact "+ e->getName(), e->getType(), def, params);
+					ae = new ArtefactEquipment("Artefact_"+ e->getName(), e->getType(), def, params);
 					//ee = e;
 					e = ae;
 				}
@@ -536,12 +578,12 @@ namespace MENU {
 					case 2:
 						p = new Potion("Potion", 15, mod);
 						ch->putItem(p);
-						///menu potion
+						menu_potion_change(p);
 						break;
 					case 3:
 						pi = new Picklocks("Picklocks");
 						ch->putItem(pi);
-						///menu picklocks
+						menu_picklock_change(pi);
 						break;
 					default:
 						break;
@@ -629,16 +671,16 @@ namespace MENU {
 				fl = 0;
 				break;
 			case 1:
-				p->changeFeatures(0, ArtefectParams::AGILITY, x);
+				p->changeFeatures(0, ArtefactParams::AGILITY, x);
 				break;
 			case 2:
-				p->changeFeatures(0, ArtefectParams::STAMINA, x);
+				p->changeFeatures(0, ArtefactParams::STAMINA, x);
 				break;
 			case 3:
-				p->changeFeatures(0, ArtefectParams::STRENGTH, x);
+				p->changeFeatures(0, ArtefactParams::STRENGTH, x);
 				break;
 			case 4:
-				p->changeFeatures(0, ArtefectParams::MAXHEALTH, x);
+				p->changeFeatures(0, ArtefactParams::MAXHEALTH, x);
 				break;
 			case 5:
 				p->changeFeatures(x);

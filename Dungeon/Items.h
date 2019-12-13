@@ -39,7 +39,7 @@ namespace ITEMS
 *
  \page modulePage Can I save my progress?
 *
-* Coming soon
+* Coming soon.Now you can save, but can't load the information
 *
 */
 
@@ -52,7 +52,7 @@ namespace ITEMS
 		PICKLOCK,///< Picklocks
 		ENCHANTEDWEAPON, ///< Enchanted weapon
 		ARTEFACTWEAPON, ///< ArtefactWeapon
-		ARTEFACTEQUIPMENT, ///<ArtefectEquipment
+		ARTEFACTEQUIPMENT, ///<ArtefactEquipment
 		ARTEFACTENCHANTWEAPON ///< Artifact enchanted weapon
 	};
 
@@ -173,7 +173,7 @@ namespace ITEMS
 	};
 
 	///All types of artefact params
-	enum ArtefectParams {
+	enum ArtefactParams {
 		STAMINA, ///< Stamina
 		STRENGTH, ///< Strength
 		MAXHEALTH, ///< Max Health
@@ -197,7 +197,7 @@ namespace ITEMS
 		double getMaxHealth();
 	public:
 		Artefact(int sta = 0, int str = 0, int ag = 0, double mh = 0) :mod(sta, str, ag, mh) {};
-		void changeParams(ArtefectParams type, double);
+		void changeParams(ArtefactParams type, double);
 	};
 
 	/*!\brief This class describes Artifact Weapon 
@@ -217,7 +217,7 @@ namespace ITEMS
 		ArtefactWeapon(string name, double damage, HeroParams mod_, map<EnemyType, double> map, int enchanted = 0) : Item(name), Weapon(name, damage,map, enchanted), Artefact(mod_.stamina,mod_.strength,mod_.agility, mod_.MaxHealth ) {};
 		virtual double generateDamage();
 		virtual WeaponParams getFeatures();
-		void changeFeatures(double damage_, ArtefectParams type_a = ARTEFACTCOUNT, double value = 0, EnemyType type_e = EnemyType::ENEMYCOUNT, double multiplier = 1.0);
+		void changeFeatures(double damage_, ArtefactParams type_a = ARTEFACTCOUNT, double value = 0, EnemyType type_e = EnemyType::ENEMYCOUNT, double multiplier = 1.0);
 	};
 
 	/*!\brief Structure that contain all equipment parameters
@@ -263,7 +263,7 @@ namespace ITEMS
 	It has additional Stamina, Strength, Agility
 	*/
 
-	class ArtefectEquipment : public Equipment, public Artefact {
+	class ArtefactEquipment : public Equipment, public Artefact {
 	public:
 		void save(std::fstream &s);
 		virtual void load(std::fstream&s);
@@ -271,10 +271,10 @@ namespace ITEMS
 		int getStamina();
 		int getStrength();
 		int getAgility();
-		ArtefectEquipment(string name, EquipType type0, double def, HeroParams mod_):Item(name),Equipment(type0, name, def), Artefact(mod_.stamina, mod_.stamina,  mod_.agility, mod_.MaxHealth){};
+		ArtefactEquipment(string name, EquipType type0, double def, HeroParams mod_):Item(name),Equipment(type0, name, def), Artefact(mod_.stamina, mod_.stamina,  mod_.agility, mod_.MaxHealth){};
 		double generateDefence();
 		EquipParams getFeatures();
-		void changeFeatures(double def, EquipType type_ =EQUIPCOUNT, ArtefectParams type_a = ARTEFACTCOUNT, double value = 0);
+		void changeFeatures(double def, EquipType type_ =EQUIPCOUNT, ArtefactParams type_a = ARTEFACTCOUNT, double value = 0);
 	};
 
 	/*! \brief This class describes everything about picklocks
@@ -324,7 +324,7 @@ namespace ITEMS
 		HeroParams getParams();
 		PotionParams getFeatures();
 		void setDuration(int dur);
-		void changeFeatures(int duration = 0, ArtefectParams a=ARTEFACTCOUNT, double value = 0);
+		void changeFeatures(int duration = 0, ArtefactParams a=ARTEFACTCOUNT, double value = 0);
 	};
 
 	/*!\brief Describes chords of an object*/
