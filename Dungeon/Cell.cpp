@@ -1,6 +1,7 @@
-
+#define _CRT_SECURE_NO_WARNINGS
 #include "Cell.h"
 #include "windows.h"
+#include <conio.h>
 
 namespace CELL {
 
@@ -8,7 +9,12 @@ namespace CELL {
 
 	void Cell::setType(CellType c)
 	{
-		type = c;
+		if (object != nullptr) {
+			type = ITEM;
+		}
+		else {
+			type = c;
+		}
 	}
 
 	/*! \brief Puts a new item in the cell*/
@@ -21,7 +27,11 @@ namespace CELL {
 		}
 		object = i;
 		i = nullptr;
-		type = CellType::ITEM;
+		if (object != nullptr) {
+			type = CellType::ITEM;
+		}
+		else
+			type = CellType::FLOOR;
 	}
 
 	/*! \brief Returns type of a cell*/
@@ -94,7 +104,43 @@ namespace CELL {
 
 	void Floor::putItem(Item * i, int x, int y, int p)
 	{
+		int co;
+		Chest *temp;
+		Enemy * tempE;
+		CellType type = cell[y][x].getType();
 		cell[y][x].putItem(i, p);
+		if (type == CHEST) {
+			if (chests.size() == 1)
+				chests.pop_back();
+			else {
+				for (int i = 0; i < chests.size(); ++i) {
+					if (chests[i]->getParams().pos.x == x && chests[i]->getParams().pos.y == y) {
+						co = i;
+						break;
+					}
+				}
+				temp = chests[chests.size()-1];
+				chests[chests.size()-1] = chests[co];
+				chests[co] = temp;
+				chests.pop_back();
+			}
+		}
+		if (type == ENEMY) {
+			if (enemies.size() == 1)
+				enemies.pop_back();
+			else {
+				for (int i = 0; i < enemies.size(); ++i) {
+					if (enemies[i]->getParams().pos.x == x && enemies[i]->getParams().pos.y == y) {
+						co = i;
+						break;
+					}
+				}
+				tempE = enemies[enemies.size() - 1];
+				enemies[enemies.size() - 1] = enemies[co];
+				enemies[co] = tempE;
+				enemies.pop_back();
+			}
+		}
 	}
 
 	/*! \brief Returns size of the floor*/
@@ -113,7 +159,12 @@ namespace CELL {
 
 	void Floor::changeType(int x, int y, CellType t)
 	{
-		cell[y][x].setType(t);
+		if (x > size.length || y > size.width) {
+			std::cout << "Error" << std::endl;
+		}
+		else {
+			cell[y][x].setType(t);
+		}
 	}
 
 	/*!\brief Allows you to know the type of the cell
@@ -211,44 +262,47 @@ namespace CELL {
 			for (int j = 0; j < size.length; ++j) {
 				p = cell[i][j].getType();
 				if (i == hero.y && j == hero.x) {
-					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+					setColor(Colors::Green, Colors::White);
 					std::cout << "@";
-					SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7));
+					setColor(Colors::White, Colors::Black);
 					continue;
 				}
 				switch (p)
 				{
 				case CELL::FLOOR:
-					std::cout << ".";
+					setColor(Colors::Black, Colors::White);
+					std::cout << " ";
 					break;
 				case CELL::OPENED_DOOR:
+					setColor(Colors::Green, Colors::White);
 					std::cout << "/";
 					break;
 				case CELL::CLOSED_DOOR:
+					setColor(Colors::LightRed, Colors::White);
 					std::cout << "+";
 					break;
 				case CELL::STAIRS_UP:
+					setColor(Colors::DarkGray, Colors::White);
 					std::cout << "<";
 					break;
 				case CELL::STAIRS_DOWN:
+					setColor(Colors::Magenta, Colors::White);
 					std::cout << ">";
 					break;
 				case CELL::ENEMY:
-					SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+					setColor(Colors::Red, Colors::White);
 					std::cout << "e";
-					SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7));
 					break;
 				case CELL::CHEST:
-					SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE);
+					setColor(Colors::LightBlue, Colors::White);
 					std::cout << "&";
-					SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7));
 					break;
 				case CELL::ITEM:
-					SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+					setColor(Colors::Blue, Colors::White);
 					std::cout << "*";
-					SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 7));
 					break;
 				case CELL::WALL:
+					setColor(Colors::Black, Colors::White);
 					std::cout << "#";
 					break;
 				default:
@@ -256,6 +310,7 @@ namespace CELL {
 				}
 			}
 			std::cout << std::endl;
+			setColor(Colors::White, Colors::Black);
 		}
 	}
 
@@ -407,10 +462,14 @@ namespace CELL {
 					cell[i][j].setType(CELL::CLOSED_DOOR);
 					break;
 				case CELL::STAIRS_UP:
+					StairsUp.x = j;
+					StairsUp.y = i;
 					cell[i][j].setType(CELL::STAIRS_UP);
 					break;
 				case CELL::STAIRS_DOWN:
-					cell[i][j].setType(CELL::STAIRS_UP);
+					StairsDown.x = j;
+					StairsDown.y = i;
+					cell[i][j].setType(CELL::STAIRS_DOWN);
 					break;
 				case CELL::WALL:
 					cell[i][j].setType(CELL::WALL);
@@ -504,6 +563,87 @@ namespace CELL {
 		return cell[y][x].getItem();
 	}
 
+	Chest * Floor::findChest(Chords pos)
+	{
+		for (int i = 0; i < chests.size(); ++i) {
+			if (chests[i]->getParams().pos.x == pos.x && chests[i]->getParams().pos.y == pos.y) {
+				return chests[i];
+			}
+		}
+		return nullptr;
+	}
+
+	Enemy * Floor::findEnemy(Chords pos)
+	{
+		for (int i = 0; i < enemies.size(); ++i) {
+			if (enemies[i]->getParams().pos.x == pos.x && enemies[i]->getParams().pos.y == pos.y) {
+				return enemies[i];
+			}
+		}
+		return nullptr;
+	}
+
+	void Floor::EnemyMove( Chords heropos, Hero & hero)
+	{
+		if (enemies.size() != 0) {
+			for (int i = 0; i < enemies.size(); ++i) {
+				CELL::CellType type;
+				int** floor;
+				floor = new int *[size.width];
+				for (int i = 0; i < size.width; ++i) {
+					floor[i] = new int[size.length];
+				}
+				for (int i = 0; i < size.width; ++i) {
+					for (int j = 0; j < size.length; ++j) {
+						type = cell[i][j].getType();
+						switch (type)
+						{
+						case CELL::CLOSED_DOOR:
+							floor[i][j] = -1;
+							break;
+						case CELL::STAIRS_UP:
+							floor[i][j] = -1;
+							break;
+						case CELL::STAIRS_DOWN:
+							floor[i][j] = -1;
+							break;
+						case CELL::WALL:
+							floor[i][j] = -1;
+							break;
+						case CELL::ENEMY:
+							floor[i][j] = -1;
+							break;
+						case CELL::CHEST:
+							floor[i][j] = -1;
+							break;
+						default:
+							floor[i][j] = 0;
+							break;
+						}
+					}
+				}
+
+				Chords newpos;
+				CHARACTERS::Enemy * e = enemies[i];
+				EnemyParams ep = e->getParams();
+				double damage;
+				newpos = e->move(floor, size, heropos);
+				if (newpos.x != -1) {
+					if (newpos.x == heropos.x && newpos.y == heropos.y) {
+						damage = enemies[i]->dealDamage();
+						hero.takeDamage(damage);
+					}
+					else {
+						enemies[i]->setPos(newpos);
+						cell[newpos.y][newpos.x].setType(CellType::ENEMY);
+						cell[ep.pos.y][ep.pos.x].setType(CellType::FLOOR);
+					}
+				}
+
+			}
+		}
+	}
+
 	Floor::~Floor()
 	{
 		for (int i = 0; i < size.width; ++i)
@@ -536,10 +676,12 @@ namespace CELL {
 
 
 	/*!\brief Makes turn */
-	void Dungeon::makeTurn(std::string s)
+	void Dungeon::makeTurn(std::string s, int & endGame)
 	{
-		int n;
+		int n, isAliveH, isAliveE;
+		double damageH, damageE;
 		int choice;
+		CHARACTERS ::Enemy *enemy;
 		EquipParams eqparam;
 		WeaponParams weparam;
 		PotionParams potparam;
@@ -581,12 +723,66 @@ namespace CELL {
 				case CELL::CLOSED_DOOR:
 					break;
 				case CELL::STAIRS_UP:
+					if (curLevel != 0) {
+						curLevel--;
+						f = getFloor(curLevel);
+						hero.setPos(f->getStairsDown().x, f->getStairsDown().y);
+					}
+					else {
+						hero.setPos(second.x, second.y);
+						std::cout << "It's the first floor";
+						Sleep(1500);
+					}
 					break;
 				case CELL::STAIRS_DOWN:
+					if (curLevel != numberOfFloors - 1) {
+						curLevel++;
+						f = getFloor(curLevel);
+						hero.setPos(f->getStairsUp().x, f->getStairsUp().y);
+						if (curLevel == numberOfFloors - 1) {
+							std::cout << "You win!!!";
+							Sleep(3000);
+						}
+					}
+					else{
+					hero.setPos(second.x, second.y);
+					std::cout << "It's the last floor";
+					Sleep(1500);
+					}
 					break;
 				case CELL::WALL:
 					break;
 				case CELL::ENEMY:
+					enemy = f->findEnemy(second);
+					std::cout << "Before: " << std::endl;
+					std::cout << enemy->getParams() << std::endl;
+					std::cout << hero.getParams() << std::endl;
+					damageE = enemy->dealDamage();
+					damageH = hero.generateDamage();
+					isAliveE = enemy->getDamage(damageH, hero.getWeapon()->getEnchants());
+					if (isAliveE) {
+						isAliveH = hero.takeDamage(damageE);
+						if (isAliveH) {
+							endGame = 0;
+						}
+						else {
+							endGame = 1;
+						}
+					}
+					else {
+						item1 = enemy->dropItem();
+						f->putItem(item1, second.x, second.y, 0);
+					}
+					Sleep(2000);
+					std::cout << std::endl;
+					std::cout << "After: " << std::endl;
+					if (isAliveE) {
+						std::cout << enemy->getParams() << std::endl;
+					}
+					if (!isAliveE)
+						hero.getExp(enemy->getParams().exp);
+					std::cout << hero.getParams() << std::endl;
+					Sleep(2000);
 					break;
 				case CELL::CHEST:
 					break;
@@ -595,6 +791,7 @@ namespace CELL {
 				}
 			}
 		}
+
 		//taking item
 		if (s == "e") {
 			item1 = f->getItem(first.x, first.y);
@@ -615,6 +812,7 @@ namespace CELL {
 				if (itemtype == ItemType::PICKLOCK)
 					std::cout << dynamic_cast<Picklocks*>(item1)->getCount() << " picklocks" << std::endl;
 				if (itemtype == ItemType::POTION) {
+					potparam = dynamic_cast<Potion *>(item1)->getFeatures();
 					std::cout << "Do you want to take it? yes(1)/no(0)" << std::endl;
 					std::cout << "New - " << potparam << std::endl;
 				}
@@ -671,7 +869,7 @@ namespace CELL {
 					return;
 				}
 				else {
-					std::cout << "There is no closed doors" << std::endl;
+					std::cout << "There is no closed doors nearby" << std::endl;
 					Sleep(1000);
 				}
 			}
@@ -707,13 +905,97 @@ namespace CELL {
 					return;
 				}
 				else {
-					std::cout << "There is no opened doors" << std::endl;
+					std::cout << "There is no opened doors nearby" << std::endl;
 					Sleep(1000);
 				}
 			}
 
 		}
 
+		//open chest
+		Item * itemchest;
+		Chest * chest;
+		int chestflag = 0, pick;
+		if (s == "g") {
+			if (first.x + 1 >= 0 && first.x + 1 < size.length) {
+				type = f->getType(first.x + 1, first.y);
+				if (type == CellType::CHEST) {
+					second.x = first.x + 1;
+					chestflag = 1;
+				}
+			}
+			if (first.x - 1 >= 0 && first.x - 1 < size.length) {
+				type = f->getType(first.x - 1, first.y);
+				if (type == CellType::CHEST) {
+					second.x = first.x - 1;
+					chestflag = 1;
+				}
+			}
+			if (first.y + 1 >= 0 && first.y + 1 < size.width) {
+				type = f->getType(first.x, first.y + 1);
+				if (type == CellType::CHEST) {
+					second.y = first.y + 1;
+					chestflag = 1;
+				}
+			}
+			if (first.y - 1 >= 0 && first.y - 1 < size.width) {
+				type = f->getType(first.x, first.y - 1);
+				if (type == CellType::CHEST) {
+					second.y = first.y - 1;
+					chestflag = 1;
+				}
+				else {
+					if (chestflag == 0) {
+						std::cout << "There is no chests nearby" << std::endl;
+						Sleep(1000);
+						return;
+					}
+				}
+			}
+			chest = f->findChest(second);
+			std::cout << chest->getParams();
+			std::cout << "Do you want to open? (1 or 0) ";
+			std::cin >> chestflag;
+			if (chestflag == 1) {
+				pick = hero.openChest();
+				if (pick > 0) {
+					itemchest = chest->open(hero.getHackProb());
+					if (itemchest) {
+						f->putItem(itemchest, second.x, second.y, 1);
+						std::cout << "Opened";
+					}
+					else {
+						std::cout << "Better luck next time";
+					}
+				}
+				else {
+					std::cout << "You don't have picklocks.";
+				}
+			}
+			else {
+				std::cout << "Error" << std::endl;
+				std::cin.clear();
+				std::cin.ignore(10000, '\n');
+			}
+			Sleep(1400);
+		}
+
+		//Drink potion
+		if (s == "z") {
+			try {
+				hero.drinkPotion();
+			}
+			catch (std::exception &ex) {
+				std::cout << "Invalid index";
+				Sleep(1500);
+			}
+			catch (std::runtime_error &ex) {
+				std::cout << ex.what();
+				Sleep(1500);
+			}
+		}
+		f->EnemyMove(hero.getPos(), hero);
+		timer();
 	}
 
 	/*!\brief Returns current level*/
@@ -824,6 +1106,60 @@ namespace CELL {
 		Floor *f = new Floor(10, 10);
 		++numberOfFloors;
 		floors.push_back(f);
+	}
+
+	void Dungeon::printHeroTable()
+	{
+		Map<HeroParamIndex, double> table = hero.getTable();
+		Map<HeroParamIndex, double>::Iterator it;
+		for (it = table.begin(); it != table.end(); ++it) {
+			switch ((*it).first)
+			{
+			case HeroParamIndex::AGILITY:
+				std::cout << "Agility - ";
+				break;
+			case HeroParamIndex::STAMINA:
+				std::cout << "Stamina - ";
+				break;
+			case HeroParamIndex::STRENGTH:
+				std::cout << "Strength - ";
+				break;
+			case HeroParamIndex::CURHEALTHHERO:
+				std::cout << "CurHealth - ";
+				break;
+			case HeroParamIndex::MAXHEALTHHERO:
+				std::cout << "MaxHealth - ";
+				break;
+			}
+			std::cout << (*it).second << " ";
+		}
+	}
+
+	void Dungeon::timer()
+	{
+		hero.timer();
+	}
+
+	void setColor(int txt, int bg)
+	{
+		HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hStdOut, (WORD)((bg << 4) | txt));
+	}
+
+	void setFontSize(int size) {
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		CONSOLE_FONT_INFOEX fontInfo;
+
+		fontInfo.cbSize = sizeof(fontInfo);
+
+		GetCurrentConsoleFontEx(hConsole, TRUE, &fontInfo);
+
+
+		wcscpy(fontInfo.FaceName, L"Lucida Console");
+
+		fontInfo.dwFontSize.Y = size;
+		SetCurrentConsoleFontEx(hConsole, TRUE, &fontInfo);
 	}
 
 }

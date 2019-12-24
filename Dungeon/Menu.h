@@ -64,7 +64,7 @@ namespace MENU {
 		/*!\brief Enchants change menu*/
 		void menu_enchant_print(Weapon *w);
 		/*!\brief Artifact change menu*/
-		void menu_artefact_change(Item *w);
+		Item * menu_artefact_change(Item *w);
 		/*!\brief Equipment change*/
 		Equipment * menu_equipment_change(Equipment *e);
 		/*!\brief Chest menu*/

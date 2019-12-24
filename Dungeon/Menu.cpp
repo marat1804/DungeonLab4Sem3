@@ -16,7 +16,7 @@ namespace MENU {
 		int tip;
 		vector<Enemy *> enemy;
 		vector<Chest *> chest;
-		CELL::Size map(0,0);
+		CHARACTERS::Size map(0,0);
 		ITEMS::Chest *ch;
 		CHARACTERS::Enemy *e;
 		while (fl) {
@@ -406,7 +406,7 @@ namespace MENU {
 					//delete ww;
 				}
 
-				menu_artefact_change(w);
+				w = dynamic_cast<Weapon*>(menu_artefact_change(w));
 
 				break;
 			default:
@@ -439,7 +439,7 @@ namespace MENU {
 		}
 	}
 
-	void Dialog::menu_artefact_change(Item * w)
+	Item * Dialog::menu_artefact_change(Item * w)
 	{
 		ItemType t = w->iAm();
 		Artefact *a = dynamic_cast<Artefact*>(w);
@@ -476,6 +476,7 @@ namespace MENU {
 				break;
 			}
 		}
+		return w;
 	}
 
 	Equipment * Dialog::menu_equipment_change(Equipment * e)
@@ -567,13 +568,14 @@ namespace MENU {
 					{
 					case 0:
 						w = new Weapon;
+						w = menu_weapon_print(w);
 						ch->putItem(w);
-						menu_weapon_print(w);
 						break;
 					case 1:
 						eq = new Equipment;
 						ch->putItem(eq);
-						menu_equipment_change(eq);
+						eq = menu_equipment_change(eq);
+						ch->putItem(eq);
 						break;
 					case 2:
 						p = new Potion("Potion", 15, mod);
@@ -591,10 +593,14 @@ namespace MENU {
 					break;
 				case 1:
 					t = param.item->iAm();
-					if (t == ItemType::WEAPON || t == ItemType::ENCHANTEDWEAPON || t == ItemType::ARTEFACTENCHANTWEAPON || t == ItemType::ARTEFACTWEAPON)
-						menu_weapon_print(dynamic_cast<Weapon *>(param.item));
-					if (t == ItemType::ARTEFACTEQUIPMENT || t == ItemType::EQUIPMENT)
-						menu_equipment_change(dynamic_cast<Equipment *>(param.item));
+					if (t == ItemType::WEAPON || t == ItemType::ENCHANTEDWEAPON || t == ItemType::ARTEFACTENCHANTWEAPON || t == ItemType::ARTEFACTWEAPON) {
+						w = menu_weapon_print(dynamic_cast<Weapon *>(param.item));
+						ch->putItem(w);
+					}
+					if (t == ItemType::ARTEFACTEQUIPMENT || t == ItemType::EQUIPMENT) {
+						eq = menu_equipment_change(dynamic_cast<Equipment *>(param.item));
+						ch->putItem(eq);
+					}
 					if (t == ItemType::PICKLOCK)
 						menu_picklock_change(dynamic_cast<Picklocks*>(param.item));
 					if (t==ItemType::POTION)

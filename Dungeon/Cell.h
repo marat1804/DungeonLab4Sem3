@@ -57,12 +57,7 @@ namespace CELL {
 		Cell & operator = (Cell &); 
 		~Cell() { delete object; };
 	};
-	/*! \brief Struct that helds a size of a floor*/
-	struct Size {
-		 int length,///<Length
-			width; ///< Width
-		Size( int len,  int wid) :length(len), width(wid) {};
-	};
+
 
 	/*! \brief This class describes a entire floor*/
 
@@ -73,7 +68,11 @@ namespace CELL {
 		vector<Enemy *> enemies; ///< This vectors has all enemies on the floor
 		int enemyCount;///< Amount anemie of on the floor
 		vector<Chest *> chests;
+		Chords StairsUp;
+		Chords StairsDown;
 	public:
+		Chords getStairsUp() { return StairsUp; };
+		Chords getStairsDown() { return StairsDown; };
 		Floor();
 		Floor(int len, int wid);
 		void putItem(Item *i, int x, int y, int p);
@@ -91,6 +90,9 @@ namespace CELL {
 		void save(int);
 		void load(int);
 		Item * getItem(int x, int y);
+		Chest* findChest(Chords pos);
+		Enemy * findEnemy(Chords pos);
+		void EnemyMove(Chords heropos, Hero &);
 		~Floor();
 	};
 
@@ -108,7 +110,7 @@ namespace CELL {
 	public: 
 		Dungeon(string s) :numberOfFloors(1) { hero.setName(s); Floor *f=new Floor(10,10); floors.push_back(f); };
 		void createEnemy(string name, EnemyType type, int floor, int x, int y, Item *it = nullptr, double health = 200);
-		void makeTurn(std::string s);
+		void makeTurn(std::string s, int &);
 		int getCurrLevel();
 		Size getSize(int);
 		/*!\brief Returns amount of the levels*/
@@ -120,12 +122,21 @@ namespace CELL {
 		void changeCellType(int n, int, int, CellType);
 		void changeHeroParams(HeroParamIndex, double);
 		HeroParams getHeroParams();
-		void tryToOpenChest();
 		void printLevel(int n);
 		Hero & getHero();
 		Floor * getFloor(int);
 		void addFloor();
+		void printHeroTable();
+		void timer();
 	};
+
+	enum Colors {
+		Black, Blue, Green, Cyan, Red, Magenta, Brown, LightGray,
+		DarkGray, LightBlue, LightGreen, LightCyan, LightRed, LightMagenta, Yellow, White
+	};
+
+	void setColor(int txt, int bg);
+	void setFontSize(int size);
 
 }
 #endif 

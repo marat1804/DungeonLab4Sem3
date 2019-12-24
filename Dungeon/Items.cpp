@@ -963,6 +963,16 @@ namespace ITEMS {
 			break;
 		}
 	}
+	Item * Chest::open(double hackProb)
+	{
+		Item *i;
+		if ((hackProb - lockLevel * 0.1) > 0.3) {
+			i= item;
+			item = nullptr;
+			return i;
+		}
+		return nullptr;
+	}
 	/*!
 	Overload operator << to print all the parametrs easily
 	*/

@@ -1,15 +1,50 @@
-﻿  Cell.cpp
+﻿  Characters.cpp
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(88): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(89): warning C5043: "Map<INDEX,INFO>::operator []": спецификация исключения не соответствует предыдущему объявлению
   c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(36): note:  см. объявление "Map<INDEX,INFO>::operator []"
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(101): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
 c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(102): warning C5043: "Map<INDEX,INFO>::operator []": спецификация исключения не соответствует предыдущему объявлению
   c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(37): note:  см. объявление "Map<INDEX,INFO>::operator []"
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(336): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(342): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(347): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(367): warning C4101: type: неиспользованная локальная переменная
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(512): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(531): warning C4018: >=: несоответствие типов со знаком и без знака
-c:\users\marat\desktop\плюсы\dungeon\dungeon\cell.cpp(750): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(72): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(73): warning C5043: "CHARACTERS::Effect::add_effect": спецификация исключения не соответствует предыдущему объявлению
+  c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.h(42): note:  см. объявление "CHARACTERS::Effect::add_effect"
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(110): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(162): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(193): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(207): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(232): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(294): warning C4244: =: преобразование "INFO" в "int", возможна потеря данных
+          with
+          [
+              INFO=double
+          ]
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(295): warning C4244: =: преобразование "INFO" в "int", возможна потеря данных
+          with
+          [
+              INFO=double
+          ]
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(296): warning C4244: =: преобразование "INFO" в "int", возможна потеря данных
+          with
+          [
+              INFO=double
+          ]
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(306): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(307): warning C5043: "CHARACTERS::Hero::changeParams": спецификация исключения не соответствует предыдущему объявлению
+  c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.h(103): note:  см. объявление "CHARACTERS::Hero::changeParams"
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(313): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(316): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(319): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(446): warning C4290: спецификация исключений C++ игнорируется, кроме случая, когда указывается, что функция не является __declspec(nothrow)
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(447): warning C5043: "CHARACTERS::Hero::drinkPotion": спецификация исключения не соответствует предыдущему объявлению
+  c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.h(106): note:  см. объявление "CHARACTERS::Hero::drinkPotion"
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(452): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(457): warning C4101: i: неиспользованная локальная переменная
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(495): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(523): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(529): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(580): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(583): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\characters.cpp(668): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(89): warning C5043: "Map<CHARACTERS::HeroParamIndex,double>::operator []": спецификация исключения не соответствует предыдущему объявлению
+  c:\users\marat\desktop\плюсы\dungeon\dungeon\map_template.h(36): note:  см. объявление "Map<CHARACTERS::HeroParamIndex,double>::operator []"
   Dungeon.vcxproj -> C:\Users\marat\Desktop\Плюсы\Dungeon\Debug\Dungeon.lib

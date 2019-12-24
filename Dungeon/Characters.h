@@ -15,6 +15,8 @@ This file has a discription of all character classes
 #include <cstdlib>
 #include <ctime> 
 #include "map_template.h"
+#include <queue>
+#include <stack>
 
 using std::string;
 using std::vector;
@@ -51,7 +53,8 @@ namespace CHARACTERS {
 		double MaxHealth;///< Maximum health
 		double exp; ///<Experience of an enemy
 		Item *i; ///< Item which enemy holds
-		EnemyParams(EnemyType type_, double attack_, double defence_, double mh) : type(type_), attack(attack_), defence(defence_), CurHealth(mh), MaxHealth(mh) {};
+		Chords pos; ///< Current position
+		EnemyParams(EnemyType type_, double attack_, double defence_, double mh) : type(type_), attack(attack_), defence(defence_), CurHealth(mh), MaxHealth(mh), pos(-1,-1) {};
 		friend std::ostream & operator <<(std::ostream&, const EnemyParams&);
 	};
 	/*!\brief Hero parametrs index to tell what parameter to change*/
@@ -83,9 +86,11 @@ namespace CHARACTERS {
 		Effect effects; ///< Effects from the potion
 		Map<HeroParamIndex, double> heroTable; ///< Herotable, where you can see all information of the hero
 		Chords pos;///< Hero position
+		void updateTable();
 	public:
 		Hero( int x=-1, int y=-1); //Добавить HEROTABLE
 		double getAttackProb();
+		int openChest() { int n = picklocks; picklocks--; if (picklocks < 0) picklocks = 0; return n; };
 		void getExp(double);
 		double getAttackBonus();
 		double getDefenceBonus();
@@ -102,7 +107,7 @@ namespace CHARACTERS {
 		void setPos(int, int);
 		/*! \brief Returns current position of a hero*/
 		Chords getPos() { return pos; }; 
-		void takeDamage( double);
+		int takeDamage( double);
 		void save();
 		void load();
 		void move(int);
@@ -111,6 +116,8 @@ namespace CHARACTERS {
 		WeaponParams getWeaponP();
 		Equipment * getEquip(EquipType type);
 		EquipParams getEquipP(EquipType type);
+		Map<HeroParamIndex, double>& getTable();
+		void timer();
 		~Hero();
 	};
 
@@ -121,6 +128,13 @@ namespace CHARACTERS {
 		ATTACK,///< Attack of a hero
 		DEFENCE, ///< Defence
 		ENEMYPARAMETRSCOUNT ///< Count
+	};
+
+	/*! \brief Struct that helds a size of a floor*/
+	struct Size {
+		int length,///<Length
+			width; ///< Width
+		Size(int len, int wid) :length(len), width(wid) {};
 	};
 
 	/*! \brief Class the describes enemies*/
@@ -137,13 +151,15 @@ namespace CHARACTERS {
 		void changeParams(ENEMYPARAMETRS index=ENEMYPARAMETRS::ENEMYPARAMETRSCOUNT, double p=0, EnemyType t = ENEMYCOUNT);
 		EnemyParams getParams();
 		double dealDamage();
-		void getDamage(double);
+		int getDamage(double, Enchantments*);
 		Item *dropItem();
 		void putItem(Item *i);
 		Item * getItem();
 		void save(std::fstream &);
 		void load(std::fstream &s);
 		~Enemy() { if (item != nullptr) delete item; };
+		Chords move(int **, Size, Chords);
+		void setPos(Chords pos);
 	};
 }
 

@@ -45,7 +45,10 @@ namespace CHARACTERS {
 			wipe();
 			return 0;
 		}
-		else
+		else {
+			if (duration <= 0)
+				duration = 0;
+		}
 			return 1;
 	}
 
@@ -56,6 +59,8 @@ namespace CHARACTERS {
 		boost.agility = 0;
 		boost.stamina = 0;
 		boost.strength = 0;
+		boost.CurHealth = 0;
+		boost.MaxHealth = 0;
 	}
 
 	/*! \brief Adds effects from the potion
@@ -67,6 +72,9 @@ namespace CHARACTERS {
 	void Effect::add_effect(HeroParams p, int dur) throw (std::exception)
 	{
 		if (duration == 0) {
+			if (p.MaxHealth != 0) {
+				p.CurHealth = p.MaxHealth;
+			}
 			boost = p;
 			duration = dur;
 		}
@@ -81,7 +89,43 @@ namespace CHARACTERS {
 		return boost;
 	}
 
-	Hero::Hero(int x_, int y_) : experience(0), name("Player"), MaxPotionNumber(5), picklocks(2), pos(x_, y_), level(0)
+	void Hero::updateTable()
+	{
+		EquipParams eq;
+		WeaponParams p;
+		double c = heroTable[HeroParamIndex::CURHEALTHHERO] / heroTable[HeroParamIndex::MAXHEALTHHERO];
+		HeroParams pa = effects.getBoost();
+		heroTable[HeroParamIndex::AGILITY]= Params.agility;
+		heroTable[HeroParamIndex::STAMINA] = Params.stamina;
+		heroTable[HeroParamIndex::STRENGTH] = Params.strength;
+		heroTable[HeroParamIndex::CURHEALTHHERO] = Params.CurHealth;
+		heroTable[HeroParamIndex::MAXHEALTHHERO] = Params.MaxHealth;
+		if (weapon->iAm() == ItemType::ARTEFACTENCHANTWEAPON || weapon->iAm() == ItemType::ARTEFACTWEAPON) {
+			p = weapon->getFeatures();
+			heroTable[HeroParamIndex::AGILITY] += p.params.agility;
+			heroTable[HeroParamIndex::STAMINA] += p.params.stamina;
+			heroTable[HeroParamIndex::STRENGTH]  += p.params.strength;
+			heroTable[HeroParamIndex::MAXHEALTHHERO] += p.params.MaxHealth;
+		}
+		for (int i = 0; i < equip.size(); ++i) {
+			eq = equip[static_cast<EquipType>(i)]->getFeatures();
+			if (eq.type == ItemType::ARTEFACTEQUIPMENT) {
+				heroTable[HeroParamIndex::AGILITY] += eq.params.agility;
+				heroTable[HeroParamIndex::STAMINA] += eq.params.stamina;
+				heroTable[HeroParamIndex::STRENGTH] += eq.params.strength;
+				heroTable[HeroParamIndex::MAXHEALTHHERO] += eq.params.MaxHealth;
+			}
+		}
+		//std::cout << heroTable[HeroParamIndex::CURHEALTHHERO];
+		heroTable[HeroParamIndex::AGILITY] += pa.agility;
+		heroTable[HeroParamIndex::STAMINA] += pa.stamina;
+		heroTable[HeroParamIndex::STRENGTH] += pa.strength;
+		heroTable[HeroParamIndex::MAXHEALTHHERO] += pa.MaxHealth;
+		heroTable[HeroParamIndex::CURHEALTHHERO] += pa.CurHealth;
+		heroTable[HeroParamIndex::CURHEALTHHERO] = heroTable[HeroParamIndex::CURHEALTHHERO] * c;
+	}
+
+	Hero::Hero(int x_, int y_) : experience(0), name("Player"), MaxPotionNumber(5), picklocks(5), pos(x_, y_), level(0)
 	{
 		srand(static_cast<unsigned int>(time(0)));
 		Params.agility = 5;
@@ -227,6 +271,7 @@ namespace CHARACTERS {
 			Params.CurHealth = Params.MaxHealth * p;
 			break;
 		}
+		updateTable();
 	}
 
 	/*! \brief Sets a new name to a hero*/
@@ -245,7 +290,13 @@ namespace CHARACTERS {
 
 	HeroParams Hero::getParams()
 	{
-		return Params;
+		HeroParams p;
+		p.agility = heroTable[HeroParamIndex::AGILITY];
+		p.stamina = heroTable[HeroParamIndex::STAMINA];
+		p.strength = heroTable[HeroParamIndex::STRENGTH];
+		p.MaxHealth = heroTable[HeroParamIndex::MAXHEALTHHERO];
+		p.CurHealth = heroTable[HeroParamIndex::CURHEALTHHERO];
+		return p;
 	}
 
 	/*!\brief allows you to change the params of hero
@@ -272,6 +323,7 @@ namespace CHARACTERS {
 			Params.CurHealth = value;
 			break;
 		}
+		updateTable();
 	}
 
 	/*!\brief Taking a new item 
@@ -334,6 +386,7 @@ namespace CHARACTERS {
 			weapon = w;
 			break;
 		}
+		updateTable();
 		return p;
 	}
 	/*! \brief Sets a new Item after changing it*/
@@ -380,6 +433,7 @@ namespace CHARACTERS {
 			equip[e->getType()] = e;
 			break;
 		}
+		updateTable();
 	}
 	
 
@@ -392,7 +446,7 @@ namespace CHARACTERS {
 	void Hero::drinkPotion() throw (std::exception)
 	{
 		if (potions.empty())
-			throw std::exception( "You don't have any potions");
+			throw std::runtime_error( "You don't have any potions");
 		else {
 			std::cout << "You have: \n";
 			for (int i = 0; i < potions.size(); ++i) {
@@ -400,10 +454,21 @@ namespace CHARACTERS {
 			}
 			std::cout << "Which one do you want to drink ? -->";
 		}
-		int index;
+		int index, i;
 		std::cin >> index;
-		Potion *p = potions.at(index);
-		effects.add_effect(p->getParams(), p->getDuration());
+		Potion *p = potions.at(index), * temp;
+		if (p) {
+			effects.add_effect(p->getParams(), p->getDuration());
+			if (potions.size() == 1)
+				potions.pop_back();
+			else {
+				temp = potions[potions.size() - 1];
+				potions[potions.size() - 1] = potions[index];
+				potions[index] = temp;
+				potions.pop_back();
+			}
+		}
+		updateTable();
 	}
 
 	/*! \brief Sets a new posotion of a hero*/
@@ -419,20 +484,24 @@ namespace CHARACTERS {
 	\param damage - damage
 	*/
 
-	void Hero::takeDamage(double damage)
+	int Hero::takeDamage(double damage)
 	{
 		double def = getDefenceBonus();
 		double prob = rand() / static_cast<double>(RAND_MAX);
 		if (prob < 0.10) {
 			std::cout << "Damage was dodged"<<std::endl;
 		}
- 		else {
+		else {
+			for (int i = 0; i < equip.size(); ++i)
+				def += equip[static_cast<EquipType>(i)]->generateDefence();
 			damage -= def * 0.8;
-			Params.CurHealth -= damage;
-			if (Params.CurHealth <= 0) {
+			heroTable[HeroParamIndex::CURHEALTHHERO] -= damage;
+			if (heroTable[HeroParamIndex::CURHEALTHHERO] <= 0) {
 				std::cout << "You're dead";
+				return 0;
 			}
 		}
+		return 1;
 	}
 
 	/*! \brief Saves all information about hero into file*/
@@ -530,6 +599,7 @@ namespace CHARACTERS {
 			potions.push_back(pot);
 		}
 		s1.close();
+		updateTable();
 	}
 
 	/*! \brief Move of a hero
@@ -572,6 +642,24 @@ namespace CHARACTERS {
 	EquipParams Hero::getEquipP(EquipType type)
 	{
 		return equip[type]->getFeatures();
+	}
+
+	Map<HeroParamIndex, double>& Hero::getTable()
+	{
+		return heroTable;
+
+	}
+
+	void Hero::timer()
+	{
+		double c, m;
+		if (!effects.timer()) {
+			c = heroTable[HeroParamIndex::CURHEALTHHERO];
+			m = heroTable[HeroParamIndex::MAXHEALTHHERO];
+			updateTable();
+			heroTable[HeroParamIndex::CURHEALTHHERO] = heroTable[HeroParamIndex::MAXHEALTHHERO] * c / m;
+		}
+		
 	}
 
 	Hero::~Hero()
@@ -622,6 +710,7 @@ namespace CHARACTERS {
 	{
 		params.i = item;
 		params.exp = experience;
+		params.pos = pos;
 		return params;
 	}
 
@@ -647,7 +736,7 @@ namespace CHARACTERS {
 	
 	\param damage - damage that hero gets*/
 
-	void Enemy::getDamage(double damage)
+	int Enemy::getDamage(double damage,  Enchantments*ench)
 	{
 		double d=0;
 		Equipment *e;
@@ -657,11 +746,16 @@ namespace CHARACTERS {
 				d = e->generateDefence();
 			}
 		}
+		if (ench != nullptr) {
+			damage = damage * ench->getMultiplier(params.type);
+		}
 		damage -= (params.defence+d) *0.8;
 		params.CurHealth -= damage;
-		if (params.CurHealth == 0) {
+		if (params.CurHealth <= 0) {
 			std::cout << name << " is dead!";
+			return 0;
 		}
+		return 1;
 	}
 
 	/*!\brief When enemy dies it drops an item
@@ -788,11 +882,145 @@ namespace CHARACTERS {
 		}
 	}
 
+	Chords Enemy::move(int **floor, Size size, Chords heropos)
+	{
+		if (params.type != EnemyType::UNDEAD && params.type != EnemyType::HUMANOID) {
+			std::queue<Chords> queue;
+
+			Chords curcell, proccell;
+
+			int d = 0;
+			floor[pos.y][pos.x] = 0;
+			floor[heropos.y][heropos.x] = 0;
+			queue.push(pos);
+			do {
+				curcell = queue.front();
+				if (floor[curcell.y][curcell.x] == d + 1)
+					++d;
+				if (curcell.x + 1 < size.length && floor[curcell.y][curcell.x + 1] == 0 && (curcell.x + 1 != pos.x || curcell.y != pos.y)) {
+					floor[curcell.y][curcell.x + 1] = d + 1;
+					proccell.x = curcell.x + 1;
+					proccell.y = curcell.y;
+					queue.push(proccell);
+				}
+				if (curcell.x - 1 >= 0 && floor[curcell.y][curcell.x - 1] == 0 && (curcell.x - 1 != pos.x || curcell.y != pos.y)) {
+					floor[curcell.y][curcell.x - 1] = d + 1;
+					proccell.x = curcell.x - 1;
+					proccell.y = curcell.y;
+					queue.push(proccell);
+				}
+				if (curcell.y + 1 < size.width && floor[curcell.y + 1][curcell.x] == 0 && (curcell.x != pos.x || curcell.y + 1 != pos.y)) {
+					floor[curcell.y + 1][curcell.x] = d + 1;
+					proccell.x = curcell.x;
+					proccell.y = curcell.y + 1;
+					queue.push(proccell);
+				}
+				if (curcell.y - 1 >= 0 && floor[curcell.y - 1][curcell.x] == 0 && (curcell.x != pos.x || curcell.y - 1 != pos.y)) {
+					floor[curcell.y - 1][curcell.x] = d + 1;
+					proccell.x = curcell.x;
+					proccell.y = curcell.y - 1;
+					queue.push(proccell);
+				}
+				queue.pop();
+			} while (queue.size() != 0 && floor[heropos.y][heropos.x] == 0);
+			/*for (int i = 0; i < size.width; ++i) {
+				for (int j = 0; j < size.length; ++j) {
+					std::cout << floor[i][j] << " ";
+				}
+				std::cout << std::endl;
+			}*/
+			std::stack<Chords> path;
+			path.push(heropos);
+			if (floor[heropos.y][heropos.x] != 0) {
+				curcell.x = heropos.x;
+				curcell.y = heropos.y;
+				d = floor[heropos.y][heropos.x];
+				while (d != 0) {
+					if (curcell.x + 1 < size.length && floor[curcell.y][curcell.x + 1] == d - 1) {
+						curcell.x = curcell.x + 1;
+						--d;
+						path.push(curcell);
+						continue;
+					}
+					if (curcell.x - 1 >= 0 && floor[curcell.y][curcell.x - 1] == d - 1) {
+						curcell.x = curcell.x - 1;
+						--d;
+						path.push(curcell);
+						continue;
+					}
+					if (curcell.y + 1 < size.width && floor[curcell.y + 1][curcell.x] == d - 1) {
+						curcell.y = curcell.y + 1;
+						--d;
+						path.push(curcell);
+						continue;
+					}
+					if (curcell.y - 1 >= 0 && floor[curcell.y - 1][curcell.x] == d - 1) {
+						curcell.y = curcell.y - 1;
+						--d;
+						path.push(curcell);
+						continue;
+					}
+				}
+				path.pop();
+				return path.top();
+
+				//while (!path.empty()) {
+				//	curcell = path.top();
+				//	std::cout << " " << curcell.x << " " << curcell.y << std::endl;
+
+				//	path.pop();
+				//}
+			}
+		}
+		if (params.type == EnemyType::UNDEAD) {
+			double prob = rand() / static_cast<double>(RAND_MAX);
+			Chords newpos;
+			if (prob >= 0.5) {
+				if (pos.y + 1 < size.width) {
+					newpos.x = pos.x;
+					newpos.y = pos.y + 1;
+				}
+				else {
+					if (pos.y - 1 >= 0) {
+						newpos.x = pos.x;
+						newpos.y = pos.y - 1;
+					}
+				}
+				return newpos;
+			}
+		}
+		if (params.type == EnemyType::HUMANOID) {
+			double prob = rand() / static_cast<double>(RAND_MAX);
+			Chords newpos;
+			if (prob >= 0.5) {
+				if (pos.x + 1 < size.length) {
+					newpos.x = pos.x + 1;
+					newpos.y = pos.y;
+				}
+				else {
+					if (pos.x - 1 >= 0) {
+						newpos.x = pos.x - 1;
+						newpos.y = pos.y;
+					}
+				}
+				return newpos;
+			}
+		}
+		Chords Null(-1, -1);
+		return Null;
+	}
+
+	void Enemy::setPos(Chords newpos)
+	{
+		pos.x = newpos.x;
+		pos.y = newpos.y;
+	}
+
 	std::ostream & operator<<(std::ostream &s, const EnemyParams &p)
 	{
 		EnemyType t = p.type;
-		s << "Attack - " << p.attack << ", defence - " << p.defence << ", MaxHealth - " << p.MaxHealth <<
-			", exp - " << p.exp << " ";
+		s << "Attack - " << p.attack << ", defence - " << p.defence <<", CurHealth - "<<p.CurHealth<< ", MaxHealth - " << p.MaxHealth <<
+			", exp - " << p.exp << " " << "position - (" << p.pos.x << "," << p.pos.y << ") ";
 		switch (t)
 		{
 		case ITEMS::HUMANOID:

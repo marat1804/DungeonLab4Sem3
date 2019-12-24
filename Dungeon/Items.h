@@ -333,6 +333,7 @@ namespace ITEMS
 		int x,///<x
 			y; ///<y
 		Chords(int a, int b) :x(a), y(b) {};
+		Chords() :x(-1), y(-1) {};
 	};
 
 	/*!\brief This structure has everything about Chest*/
@@ -359,6 +360,7 @@ namespace ITEMS
 		void putItem(Item *i);
 		void save(std::fstream&);
 		virtual void load(std::fstream&s);
+		Item * open(double hackProb);
 		~Chest() { if(item!=nullptr) delete item; };
 	};
 
